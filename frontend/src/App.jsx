@@ -1,6 +1,6 @@
+// src/App.jsx
 import React, { useEffect, useState } from 'react'
 import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
@@ -17,9 +17,10 @@ export default function App() {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(`${API}/users`)
-      setUsers(res.data)
+      // support either an array or object w/ value
+      setUsers(Array.isArray(res.data) ? res.data : (res.data.value || []))
     } catch (err) {
-      console.error(err)
+      console.error('fetchUsers error', err)
     }
   }
 
@@ -35,13 +36,14 @@ export default function App() {
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" mb={2}>User Management</Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+        <Box sx={{ width: { xs: '100%', md: 360 } }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Add User</Typography>
             <Divider sx={{ my: 1 }} />
             <UserForm onSuccess={handleUserAdded} />
           </Paper>
+
           <Paper sx={{ p: 2, mt: 2 }}>
             <Typography variant="subtitle1">Dashboard</Typography>
             <Box display="flex" justifyContent="space-between" mt={1}>
@@ -59,16 +61,16 @@ export default function App() {
               </Box>
             </Box>
           </Paper>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={8}>
+        <Box sx={{ flex: 1 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Users</Typography>
             <Divider sx={{ my: 1 }} />
             <UsersTable users={users} />
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   )
 }
